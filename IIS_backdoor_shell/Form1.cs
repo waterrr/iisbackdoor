@@ -171,7 +171,7 @@ namespace IIS_backdoor_shell
 
         class DesString
         {
-            static string encryptKey = "jqkA";//密钥（4位）
+            static string encryptKey = "Base";//密钥（4位）
 
             public string Encrypt(string str)
             {
